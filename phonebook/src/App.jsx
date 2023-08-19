@@ -8,6 +8,10 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
+    const duplicate = persons.filter(person => person.name === newName).length;
+    if (duplicate > 0){
+      return (alert('Name already taken'))
+    };
     const personObject = {
       name: newName
     };
@@ -16,7 +20,7 @@ const App = () => {
   }
 
   const handleNameChange = (event) => {
-    setNewName(event.target.value)
+    setNewName(event.target.value);
   }
 
   return (
