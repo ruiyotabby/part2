@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '011-4440014', id: 1 },
-    { name: 'kevin', number: '123-456789', id: 2 }
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [show, setShow] = useState(persons);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/persons')
+      .then(res => {
+        setPersons(res.data);
+        setShow(res.data);
+      })
+  },[])
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -91,6 +97,5 @@ const Input = ({value, handleChange, text}) => (
       {text}: <input value={value} onChange={handleChange} />
     </div>
 )
-
 
 export default App;
