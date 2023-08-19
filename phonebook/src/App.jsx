@@ -3,8 +3,8 @@ import { useState } from 'react'
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '011-4440014', id: 1 },
-    { name: 'kevin', number: '123456', id: 2 }
-  ]) ;
+    { name: 'kevin', number: '123-456789', id: 2 }
+  ]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [show, setShow] = useState(persons);
@@ -29,8 +29,12 @@ const App = () => {
     setNewNumber('');
   }
 
-  const handleNameChange = (event) => setNewName(event.target.value);
-  const handleNumberChange = (event) => setNewNumber(event.target.value);
+  const handleNameChange = (event) => 
+    setNewName(event.target.value);
+
+  const handleNumberChange = (event) => 
+    setNewNumber(event.target.value);
+
   const handleFilterChange = (event) => {
     const filter = persons.find(person => 
       person.name.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase())
@@ -48,27 +52,45 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        Filter shown with <input onChange={handleFilterChange} />
-      </div>
+      <Filter text='Filter shown with' handleChange={handleFilterChange} />
       <h2>Add a new</h2>
-      <form>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit" onClick={addPerson}>add</button>
-        </div>
-      </form>
+      <PersonForm 
+        value={{name: newName, number: newNumber}} 
+        handleChange={{name: handleNameChange, number: handleNumberChange}} 
+        handleClick={addPerson} />
       <h2>Numbers</h2>
-      {show.map((person) => 
-        <p key={person.id}>{person.name} {person.number}</p>
-      )}
+      <Persons persons={show} />
     </div>
   )
 }
+
+const Persons = ({persons}) => (
+  <>
+    {persons.map((person) =>
+      <p key={person.id}>{person.name} {person.number}</p>
+    )}
+  </>
+)
+
+const Filter = ({handleChange, text}) => (
+  <div>
+    {text} <input onChange={handleChange} />
+  </div>
+)
+
+const PersonForm = ({value, handleChange, handleClick}) => (
+  <form>
+    <Input value={value.name} handleChange={handleChange.name} text='Name' />
+    <Input value={value.number} handleChange={handleChange.number} text='Number' />
+    <button type="submit" onClick={handleClick}>add</button>
+  </form>
+)
+
+const Input = ({value, handleChange, text}) => (
+  <div>
+      {text}: <input value={value} onChange={handleChange} />
+    </div>
+)
+
 
 export default App;
