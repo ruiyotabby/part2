@@ -1,68 +1,88 @@
 const App = () => {
-  const course = {
-    id: 1,
-    name: 'Half Stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10,
-        id: 1
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7,
-        id: 2
-      },
-      {
-        name: 'State of a component',
-        exercises: 14,
-        id: 3
-      }
-    ]
-  }
+  const courses = [
+    {
+      id: 1,
+      name: 'Half Stack application development',
+      parts: [
+        {
+          name: 'Fundamentals of React',
+          exercises: 10,
+          id: 1
+        },
+        {
+          name: 'Using props to pass data',
+          exercises: 7,
+          id: 2
+        },
+        {
+          name: 'State of a component',
+          exercises: 14,
+          id: 3
+        }
+      ]
+    },
+    {
+      name: 'Node.js',
+      id: 2,
+      parts: [
+        {
+          name: 'Routing',
+          exercises: 3,
+          id: 1
+        },
+        {
+          name: 'Middlewares',
+          exercises: 7,
+          id: 2
+        }
+      ]
+    }
+  ]
 
   return (
+    courses.map((course) => (
     <div>
       <Header course={course} />
       <Content course={course} />
       <Total course={course} />
     </div>
+    ))
   )
 }
 
-const Header = (props) => {
+const Header = ({course}) => {
   return (
-    <h1>{props.course.name}</h1>
+    <h2>{course.name}</h2>
   )
 }
 
 const Content = (props) => {
   return (
     props.course.parts.map((el) => (
-      <Part name={el.name} exercise={el.exercises} />
+      <Part key={el.id} course={el} />
     ))
   )
 }
 
-const Part = (props) => {
+const Part = ({course}) => {
   return (
     <p>
-      {props.name} {props.exercise}
+      {course.name} {course.exercises}
     </p>
   )
 }
 
-const Total = (props) => {
+const Total = ({course}) => {
   const arr = [];
-  props.course.parts.forEach(element => {
+  course.parts.forEach(element => {
        arr.push(element.exercises)
     })
 
-    const total = arr.reduce((accumulator, currentValue) => accumulator + currentValue);
+  const total = arr.reduce((accumulator, currentValue) => accumulator + currentValue);
 
   return (
     <p>
-      Number of exercises: {total}
+      <strong>Total of {total} exercises</strong> 
     </p>
   )
 }
