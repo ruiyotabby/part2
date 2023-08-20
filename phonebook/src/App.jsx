@@ -26,13 +26,15 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
     };
 
-    setPersons(persons.concat(personObject));
-    setShow(show.concat(personObject));
-    setNewName('');
-    setNewNumber('');
+    axios.post('http://localhost:3001/persons', personObject)
+    .then(response => {
+      setPersons(persons.concat(response.data));
+      setShow(show.concat(response.data));
+      setNewName('');
+      setNewNumber('');
+    })
   }
 
   const handleNameChange = (event) => 
@@ -42,7 +44,7 @@ const App = () => {
     setNewNumber(event.target.value);
 
   const handleFilterChange = (event) => {
-    const filter = persons.find(person => 
+    const filter = persons.filter(person => 
       person.name.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase())
     );
 
@@ -52,7 +54,7 @@ const App = () => {
       return setShow([]);
     }
 
-    setShow([filter]);
+    setShow(filter);
   }
 
   return (
