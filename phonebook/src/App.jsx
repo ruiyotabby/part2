@@ -16,16 +16,24 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const duplicate = persons.filter(person => person.name === newName);
-    if (duplicate.length > 0){
-      const name = duplicate[0].name;
-      return (alert(`${name} is already added to phonebook`));
-    }
-
     const personObject = {
       name: newName,
       number: newNumber,
     };
+
+    const duplicate = persons.filter(person => person.name === newName);
+    if (duplicate.length > 0){
+      const name = duplicate[0].name;
+      const id = duplicate[0].id;
+      if (window.confirm(`${name} is already added to phonebook. Replace the old number with new one?`)){
+        return (personService.update(id, personObject).then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+          setShow(persons.map(person => person.id !== id ? person : returnedPerson))
+        }))
+      } else{
+        return
+      }
+    }
 
     personService.create(personObject).then(response => {
       setPersons(persons.concat(response));
@@ -56,9 +64,8 @@ const App = () => {
   }
 
   const handleDeletion =(object) => {
-    console.log(object)
     if (window.confirm(`Delete ${object.name}?`)) {
-      personService.remove(object.id).then(response => {
+      personService.remove(object.id).then(() => {
         setPersons(persons.filter(person => person.id !== object.id))
         setShow(persons.filter(person => person.id !== object.id))
       })
