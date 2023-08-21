@@ -55,6 +55,16 @@ const App = () => {
     setShow(filter);
   }
 
+  const handleDeletion =(object) => {
+    console.log(object)
+    if (window.confirm(`Delete ${object.name}?`)) {
+      personService.remove(object.id).then(response => {
+        setPersons(persons.filter(person => person.id !== object.id))
+        setShow(persons.filter(person => person.id !== object.id))
+      })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -65,18 +75,23 @@ const App = () => {
         handleChange={{name: handleNameChange, number: handleNumberChange}} 
         handleClick={addPerson} />
       <h2>Numbers</h2>
-      <Persons persons={show} />
+      <Persons persons={show} handleChange={handleDeletion} />
     </div>
   )
 }
 
-const Persons = ({persons}) => (
-  <>
-    {persons.map((person) =>
-      <p key={person.id}>{person.name} {person.number}</p>
-    )}
-  </>
-)
+const Persons = ({persons, handleChange}) => {
+  return (
+    <>
+      {persons.map((person) =>
+        <p key={person.id}>
+          {person.name} {person.number}
+          <button onClick={() => handleChange(person)}>delete</button>
+        </p>
+      )}
+    </>
+  )
+}
 
 const Filter = ({handleChange, text}) => (
   <div>
