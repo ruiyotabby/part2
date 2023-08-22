@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import personService from './services/person';
+import './app.css'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [show, setShow] = useState(persons);
+  const [successMessage, setSuccesssMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService.getAll().then(response => {
@@ -27,6 +30,8 @@ const App = () => {
       const id = duplicate[0].id;
       if (window.confirm(`${name} is already added to phonebook. Replace the old number with new one?`)){
         return (personService.update(id, personObject).then(returnedPerson => {
+          setSuccesssMessage(`${name} was updated successfully`)
+          setTimeout(() => {setSuccesssMessage(null)}, 5000)
           setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
           setShow(persons.map(person => person.id !== id ? person : returnedPerson))
         }))
@@ -36,6 +41,8 @@ const App = () => {
     }
 
     personService.create(personObject).then(response => {
+      setSuccesssMessage(`Added '${personObject.name}'`);
+      setTimeout(() => {setSuccesssMessage(null)}, 5000)
       setPersons(persons.concat(response));
       setShow(show.concat(response));
       setNewName('');
@@ -66,6 +73,15 @@ const App = () => {
   const handleDeletion =(object) => {
     if (window.confirm(`Delete ${object.name}?`)) {
       personService.remove(object.id).then(() => {
+        setSuccesssMessage(`Deleted '${object.name}'`);
+        setTimeout(() => {setSuccesssMessage(null)}, 5000)
+        setPersons(persons.filter(person => person.id !== object.id))
+        setShow(persons.filter(person => person.id !== object.id))
+      }).catch(error => {
+        setErrorMessage(`'${object.name}' was already deleted`)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
         setPersons(persons.filter(person => person.id !== object.id))
         setShow(persons.filter(person => person.id !== object.id))
       })
@@ -75,6 +91,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMessage} type='success' />
+      <Notification message={errorMessage} type='error' />
       <Filter text='Filter shown with' handleChange={handleFilterChange} />
       <h2>Add a new</h2>
       <PersonForm 
@@ -84,6 +102,15 @@ const App = () => {
       <h2>Numbers</h2>
       <Persons persons={show} handleChange={handleDeletion} />
     </div>
+  )
+}
+
+const Notification = ({message, type}) => {
+  if (message === null) {
+    return null
+  }
+  return (
+    <div className={type}>{message}</div>
   )
 }
 
