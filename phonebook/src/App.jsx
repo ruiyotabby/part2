@@ -13,9 +13,9 @@ const App = () => {
   useEffect(() => {
     personService.getAll().then(response => {
       setPersons(response);
-      setShow(response);
     })
-  },[])
+    setShow(persons);
+  },[persons])
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -29,7 +29,7 @@ const App = () => {
       const name = duplicate[0].name;
       const id = duplicate[0].id;
       if (window.confirm(`${name} is already added to phonebook. Replace the old number with new one?`)){
-        return (personService.update(id, personObject).then(returnedPerson => {
+        return (personService.update(id, personObject).then(async (returnedPerson) => {
           setSuccesssMessage(`${name} was updated successfully`)
           setTimeout(() => {setSuccesssMessage(null)}, 5000)
           setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
@@ -44,7 +44,6 @@ const App = () => {
       setSuccesssMessage(`Added '${personObject.name}'`);
       setTimeout(() => {setSuccesssMessage(null)}, 5000)
       setPersons(persons.concat(response));
-      setShow(show.concat(response));
       setNewName('');
       setNewNumber('');
     })
@@ -76,14 +75,12 @@ const App = () => {
         setSuccesssMessage(`Deleted '${object.name}'`);
         setTimeout(() => {setSuccesssMessage(null)}, 5000)
         setPersons(persons.filter(person => person.id !== object.id))
-        setShow(persons.filter(person => person.id !== object.id))
       }).catch(error => {
         setErrorMessage(`'${object.name}' was already deleted`)
         setTimeout(() => {
           setErrorMessage(null)
         }, 5000)
         setPersons(persons.filter(person => person.id !== object.id))
-        setShow(persons.filter(person => person.id !== object.id))
       })
     }
   }
