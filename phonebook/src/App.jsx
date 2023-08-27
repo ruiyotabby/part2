@@ -10,12 +10,13 @@ const App = () => {
   const [successMessage, setSuccesssMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
 
-  useEffect(() => {
-    personService.getAll().then(response => {
+  useEffect(() => personService.getAll().then(response => {
       setPersons(response);
     })
-    setShow(persons);
-  },[persons])
+  ,[])
+
+  useEffect(() => setShow(persons)
+  ,[persons])
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -34,7 +35,10 @@ const App = () => {
           setTimeout(() => {setSuccesssMessage(null)}, 5000)
           setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
           setShow(persons.map(person => person.id !== id ? person : returnedPerson))
-        }))
+        })).catch(error => {
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => { setErrorMessage(null) }, 5000)
+        })
       } else{
         return
       }
@@ -46,6 +50,9 @@ const App = () => {
       setPersons(persons.concat(response));
       setNewName('');
       setNewNumber('');
+    }).catch(error => {
+      setErrorMessage(error.response.data.error)
+      setTimeout(() => { setErrorMessage(null) }, 5000)
     })
   }
 
