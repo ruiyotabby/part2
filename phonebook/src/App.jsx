@@ -29,7 +29,7 @@ const App = () => {
       const name = duplicate[0].name;
       const id = duplicate[0].id;
       if (window.confirm(`${name} is already added to phonebook. Replace the old number with new one?`)){
-        return (personService.update(id, personObject).then(async (returnedPerson) => {
+        return (personService.update(id, personObject).then((returnedPerson) => {
           setSuccesssMessage(`${name} was updated successfully`)
           setTimeout(() => {setSuccesssMessage(null)}, 5000)
           setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
