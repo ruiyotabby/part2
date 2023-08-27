@@ -1,6 +1,7 @@
 import './App.css';
 import { useState, useEffect } from "react";
 import countryService from "./services/country";
+import weatherService from "./services/weather";
 
 
 function App() {
@@ -12,11 +13,12 @@ function App() {
     let returned = countries.filter(country => (country.toLowerCase().includes(value.toLowerCase())))
 
     if (returned.length === 1) {
-      countryService.get(returned[0]).then(response => {
+      countryService.get(returned[0]).then(async (response) => {
+        await weatherService.get(response).then(res=> {
+          response.weather = res
+        }).catch(err => alert(err))
         setDisplay(response)
-      }).catch(err => {
-        alert(err);
-      })
+      }).catch(err => alert(err))
     } else {
       setDisplay(returned)
     }
@@ -34,21 +36,38 @@ function App() {
       <label>find countries: </label>
       <input onChange={handleChange}/>
       <Display countries={display} />
-      {/* {display.map((country, id) => (
-        <p key={id}>{country}</p>
-      ))} */}
     </div>
   );
 }
 
 const Display = ({countries}) => {
+
   if (countries.length > 10){
-    return <p>Too many mtches, please specify</p>
+    return <p>Too many matches, please specify filter</p>
   } else if(countries.length === undefined) {
     const country = countries
-    console.log(country.flags);
     return (
-      <div>
+      <Data country={country} />
+    )
+  }
+
+  return (
+    countries.map((country, id) => (
+      <>
+        <p key={id}>
+          {country} 
+        </p>
+      </>
+    ))
+  )
+}
+
+const Data = ({country}) => {
+
+  const icon = country.weather.weather[0].icon
+  
+  return (
+    <div>
         <h1>{country.name.common} </h1>
         <p>capital {country.capital[0]}</p>
         <p>area {country.area}</p>
@@ -60,14 +79,11 @@ const Display = ({countries}) => {
           }
         </ul>
         <img src={country.flags.png} alt={country.flags.alt} />
+        <h2>Weather in {country.capital[0]}</h2>
+        <p>temperature {Math.round(country.weather.main.temp - 273)} Celcius</p>
+        <img src={`https://openweathermap.org/img/wn/${icon}@2x.png`} alt="" />
+        <p>Wind {country.weather.wind.speed} m/s</p>
       </div>
-    )
-  }
-
-  return (
-    countries.map((country, id) => (
-      <p key={id}>{country}</p>
-    ))
   )
 }
 
